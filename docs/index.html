@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>커뮤니티 이슈 클리핑</title>
+  <meta name="description" content="국내 주요 커뮤니티 인기글 중 이슈가 될 만한 글을 3시간마다 모읍니다.">
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <h1>커뮤니티 이슈 클리핑</h1>
+      <p class="sub">주요 커뮤니티 인기글 중 이슈가 될 만한 글을 3시간마다 모읍니다
+        <span id="updated"></span></p>
+      <p class="status" id="status"></p>
+    </div>
+  </header>
+
+  <nav class="tabs wrap" id="tabs" role="tablist" aria-label="보기"></nav>
+  <nav class="chips wrap" id="sources" aria-label="커뮤니티"></nav>
+
+  <section class="controls wrap">
+    <input id="q" type="search" placeholder="키워드 검색 (제목·커뮤니티)" aria-label="키워드 검색">
+    <div class="row">
+      <select id="period" aria-label="기간">
+        <option value="6">최근 6시간</option>
+        <option value="24" selected>최근 24시간</option>
+        <option value="72">최근 3일</option>
+        <option value="168">최근 7일</option>
+      </select>
+      <div class="seg" role="group" aria-label="정렬">
+        <button data-sort="heat" class="on">화제순</button>
+        <button data-sort="latest">최신순</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="showLow"> 반응 적은 글도 보기</label>
+    </div>
+    <p class="count" id="count"></p>
+  </section>
+
+  <main class="wrap" id="list"><p class="empty">글을 불러오는 중…</p></main>
+
+  <footer class="wrap foot">
+    <p><b>화제</b> 점수: 같은 이야기가 여러 커뮤니티에 올라올수록(1곳 최대 3점, 2곳 4점, 3곳 이상 5점), 그 커뮤니티 안에서 조회·추천·댓글이 많을수록 높습니다.
+      비슷한 제목의 글은 카드 하나로 묶었습니다.</p>
+    <p>혐오·비하 표현, 젠더 갈등, 외모·몸 평가, 선정적인 글, 정치 비하 표현, 신상 노출, 의미 없는 짧은 글은 제목 기준으로 자동으로 걸러냅니다(완벽하지 않을 수 있음).
+      본문과 이미지는 저장하지 않고 제목·링크·반응 수만 보여주며, 글의 저작권은 작성자와 각 커뮤니티에 있습니다.</p>
+    <p>☆로 저장한 글은 지금 쓰는 브라우저에만 보관됩니다.</p>
+  </footer>
+
+  <script src="app.js?v=1"></script>
+</body>
+</html>
