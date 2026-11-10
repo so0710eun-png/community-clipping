@@ -1,15 +1,18 @@
 // 커뮤니티 이슈 클리핑 — 화면 동작 (posts.json을 읽어 목록을 그림)
 const TABS = { all: "전체", saved: "★ 저장" };
 const store = (() => { try { return window.localStorage; } catch { return null; } })();
-const remember = (k, v) => { try { store && store.setItem(k, v); } catch {} };
-const recall = (k, d) => { try { return (store && store.getItem(k)) || d; } catch { return d; } };
+// 외신 클리핑과 같은 주소(github.io)를 써서 저장 공간이 겹치므로, 이 사이트 설정에는 cc_ 를 붙여 따로 보관
+const PREFIX = "cc_";
+const remember = (k, v) => { try { store && store.setItem(PREFIX + k, v); } catch {} };
+const recall = (k, d) => { try { return (store && store.getItem(PREFIX + k)) || d; } catch { return d; } };
+const oneOf = (v, allowed, d) => (allowed.includes(v) ? v : d);
 
 const state = {
   posts: [], names: {}, sourcesInfo: {}, hidden: {},
-  tab: recall("tab", "all"),
+  tab: oneOf(recall("tab", "all"), ["all", "saved"], "all"),
   source: recall("source", "ALL"),
-  sort: recall("sort", "heat"),
-  period: recall("period", "24"),
+  sort: oneOf(recall("sort", "heat"), ["heat", "latest"], "heat"),
+  period: oneOf(recall("period", "24"), ["6", "24", "72", "168"], "24"),
   showLow: recall("showLow", "0") === "1",
   q: "",
 };
@@ -193,6 +196,7 @@ async function init() {
     state.sourcesInfo = data.sources || {};
     state.hidden = data.hidden || {};
     state.names = Object.fromEntries(Object.entries(state.sourcesInfo).map(([k, v]) => [k, v.name]));
+    if (state.source !== "ALL" && !state.names[state.source]) state.source = "ALL";
     if (data.updated) {
       $("#updated").textContent = `· 마지막 갱신 ${new Date(data.updated).toLocaleString("ko-KR", { dateStyle: "medium", timeStyle: "short" })}`;
     }
