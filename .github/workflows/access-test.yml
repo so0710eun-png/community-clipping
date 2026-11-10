@@ -1,0 +1,38 @@
+name: Access test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Try each community from GitHub servers
+        run: |
+          python3 - <<'EOF'
+          import re, urllib.request
+          UA = "Mozilla/5.0 (compatible; community-clipping/0.1; +https://github.com/so0710eun-png/community-clipping)"
+          sites = [
+              ("dcinside", "https://gall.dcinside.com/board/lists/?id=dcbest"),
+              ("fmkorea", "https://www.fmkorea.com/best"),
+              ("theqoo", "https://theqoo.net/hot"),
+              ("ppomppu_rss", "https://www.ppomppu.co.kr/rss.php?id=freeboard"),
+              ("bobaedream", "https://www.bobaedream.co.kr/list?code=best"),
+              ("humoruniv", "https://web.humoruniv.com/board/humor/list.html?table=pds&st=day"),
+              ("ruliweb", "https://bbs.ruliweb.com/best/humor_only"),
+              ("clien", "https://www.clien.net/service/board/park"),
+              ("instiz", "https://www.instiz.net/pt?category=1"),
+          ]
+          for name, url in sites:
+              try:
+                  req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "ko-KR,ko;q=0.9"})
+                  with urllib.request.urlopen(req, timeout=25) as r:
+                      body = r.read()
+                      code = r.status
+                  text = body.decode("utf-8", "ignore")
+                  links = len(re.findall(r"<a ", text))
+                  blocked = bool(re.search(r"challenge-platform|Just a moment|cf-chl|captcha", text, re.I))
+                  print(f"RESULT {name}: HTTP {code}, {len(body)//1024} KB, links={links}, blocked_page={blocked}")
+              except Exception as e:
+                  print(f"RESULT {name}: FAIL {e}")
+          EOF
