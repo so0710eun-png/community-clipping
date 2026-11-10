@@ -10,17 +10,22 @@ import math
 import re
 from datetime import datetime, timedelta
 
-SIM_THRESHOLD = 0.35
+SIM_THRESHOLD = 0.35   # 실제 수집 글로 시험해 정한 값
+MIN_SHARED = 3         # 겹치는 글자 조합이 최소 3개는 있어야 같은 이야기 후보
 PAIR_HOURS = 48
 LOW_PERCENTILE = 0.3   # 한 곳에만 있고 그 커뮤니티 안에서 하위 30%면 '반응 적은 글'
 
+# 커뮤니티 제목에 흔히 붙는 말 (같은 이야기 판단에 쓰지 않음)
 STOP_BIGRAMS = {
     "있습", "습니", "니다", "했다", "한다", "에서", "으로", "있다", "이다", "하는", "근황", "현재",
-    "ㅋㅋ", "ㅎㅎ", "ㄷㄷ", "ㅠㅠ", "진짜", "오늘", "요즘", "jpg", "gif", "mp4", "webp",
+    "진짜", "오늘", "요즘", "jpg", "gif", "mp4", "webp", "싱글", "글벙", "벙글", "의외", "외로",
+    "레전", "전드", "충격", "논란", "사람", "이유", "처음",
 }
+PREFIX_RE = re.compile(r"^\s*(싱글벙글|훈훈훈훈|깜짝깜짝|어질어질)\s*")
 
 
 def tokens(text: str) -> set[str]:
+    text = PREFIX_RE.sub("", text)
     out = set()
     for w in re.findall(r"[가-힣]+|[A-Za-z0-9]{2,}", text):
         if re.fullmatch(r"[A-Za-z0-9]+", w):
@@ -80,9 +85,10 @@ def assign(posts: dict[str, dict], names: dict[str, str]) -> None:
             if times[j] - times[i] > timedelta(hours=PAIR_HOURS):
                 break
             shared = toks[i] & toks[j]
-            if len(shared) < 2:
+            if len(shared) < MIN_SHARED:
                 continue
-            denom = min(weight[i], weight[j])
+            # 둘 중 긴 제목 기준으로 비교해야 흔한 말 몇 개로 엉뚱하게 묶이지 않음
+            denom = max(weight[i], weight[j])
             if denom > 0 and sum(idf[b] for b in shared) / denom >= SIM_THRESHOLD:
                 parent[find(j)] = find(i)
 

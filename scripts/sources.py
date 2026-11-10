@@ -141,13 +141,13 @@ def ruliweb() -> list[dict]:
     out = []
     for row in t.split('<tr class="table_body')[1:]:
         a = re.search(r'class="subject_link[^"]*"\s+href="([^"]+)"', row)
-        tit = re.search(r'<strong class="text_over">(.*?)</strong>', row, re.S)
+        tit = re.search(r'<(strong|span) class="text_over">(.*?)</\1>', row, re.S)
         if not (a and tit) or "notice" in row[:80]:
             continue
         reply = re.search(r'class="num_reply[^"]*">\s*\((\d+)\)', row)
         href = html.unescape(a.group(1))
         out.append({
-            "title": clean(tit.group(1)), "board": "베스트",
+            "title": clean(tit.group(2)), "board": "베스트",
             "url": href if href.startswith("http") else "https://bbs.ruliweb.com" + href,
             "views": num((re.search(r'<td class="hit">(.*?)</td>', row, re.S) or [None, ""])[1]),
             "likes": num((re.search(r'<td class="recomd">(.*?)</td>', row, re.S) or [None, ""])[1]),
