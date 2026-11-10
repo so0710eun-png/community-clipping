@@ -92,7 +92,11 @@ function renderHeader() {
   const info = Object.entries(state.sourcesInfo).map(([k, v]) =>
     v.ok ? esc(v.name) : `<span class="bad">${esc(v.name)}(수집 실패)</span>`).join(" · ");
   const hiddenN = Object.values(state.hidden).reduce((a, b) => a + b, 0);
-  $("#status").innerHTML = `${info}${hiddenN ? ` · 걸러낸 글 ${hiddenN}건` : ""}`;
+  const detail = Object.entries(state.hidden).map(([k, v]) => `${k} ${v}`).join(", ");
+  const lowN = state.posts.filter((p) => p.low).length;
+  $("#status").innerHTML = `${info}` +
+    (hiddenN ? ` · 걸러낸 글 ${hiddenN}건 <span title="${esc(detail)}">(${esc(detail)})</span>` : "") +
+    (lowN && !state.showLow ? ` · 반응 적어 숨긴 글 ${lowN}건` : "");
 }
 
 function renderTabs() {
